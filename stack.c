@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <stlib.h>
+#include <stdlib.h>
 #include <assert.h>
 #include "stack.h"
 Snode* newNode_Stack(int data)
@@ -13,9 +13,11 @@ Stack* newStack()
 	Stack* pila = (Stack*) malloc(sizeof(Stack));
 	assert(pila != NULL);
 	pila->top = NULL;
+	pila->count = 0;
 }
-Stack* empty(Stack* pila){
-	if pila.top == NULL
+
+int empty(Stack* pila){
+	if (pila->top == NULL)
 		return 1;
 	else
 		return 0;
@@ -28,8 +30,12 @@ Stack* push(Stack* pila, int data)
 	return pila;
 }
 int pop(Stack* pila){
-	if(empty(pila) == 0)
-		return NULL;
+	if(empty(pila))
+	{
+		puts("Empty Stack");
+		return;
+	}
+
 	int data = pila->top->element;
 	Snode* tmp = pila->top;
 	pila->top = pila->top->prev;
