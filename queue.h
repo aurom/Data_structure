@@ -1,5 +1,5 @@
-typedef nodo_queue Qnode;
-typedef queue_struct Queue;
+typedef struct nodo_queue Qnode;
+typedef struct queue_struct Queue;
 
 struct nodo_queue
 {
