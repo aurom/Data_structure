@@ -105,16 +105,16 @@ AvlTree* balance(AvlTree* tree)
 	if(tree == NULL)
 		return NULL;
 	if(height(tree->left) - height(tree->right) > 1){//si esta desbalanceado por la izquierda
-		if(height(tree->left->left) >= height(tree->left->right)) //el arbol izquierdo es el desbalanceado
-			tree = srotationleft(tree); //rotacion simple al arbol izquierdo 
+		if(height(tree->left->left) >= height(tree->left->right))
+			tree = srotationleft(tree);
 		else
-			tree = drotationleft(tree);//los dos estan en desbalance
+			tree = drotationleft(tree);
 	}
 	else if(height(tree->right)-height(tree->left) > 1){ //si esta desbalanceado por la derecha
-			if(height(tree->right->right) >= height(tree->right->left)) //el arbol derecho es el desbalanceado
+			if(height(tree->right->right) >= height(tree->right->left))
 				tree = srotationright(tree);
 			else
-				tree = drotationright(tree); //los dos estan en desbalance
+				tree = drotationright(tree);
 	}
 	else
 		;
