@@ -11,9 +11,11 @@ struct nodo_queue
 struct queue_struct {
 	Qnode* head;
 	Qnode* tail;
+	int count;
 };
 
 Qnode* newQnode(int data);
 Queue* newQueue();
 void enqueue(Queue*,int);
 int dequeue(Queue*);
+int length(Queue*);

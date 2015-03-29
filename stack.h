@@ -18,3 +18,4 @@ Stack* newStack();
 int empty(Stack*);
 Stack* push(Stack*, int);
 int pop(Stack*);
+int length(Stack*);

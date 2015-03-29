@@ -21,6 +21,7 @@ void enqueue(Queue* cola,int data){
 	cola->tail->next = tmp;
 	tmp->prev = cola->tail;
 	cola->tail = tmp;
+	cola->count++;
 }
 int dequeue(Queue* cola){
 	int data = cola->head->element;
@@ -28,5 +29,11 @@ int dequeue(Queue* cola){
 	cola->head = cola->head->prev;
 	cola->head->prev->next = NULL;
 	free(tmp);
+	cola->count--;
 	return data;
+}
+
+int length(Queue* cola)
+{
+	return cola->count;
 }

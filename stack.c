@@ -27,6 +27,7 @@ Stack* push(Stack* pila, int data)
 	Snode* tmp =  newNode_Stack(data);
 	pila->top->prev = pila->top;
 	pila->top = tmp;
+	pila->count++;
 	return pila;
 }
 int pop(Stack* pila){
@@ -40,5 +41,11 @@ int pop(Stack* pila){
 	Snode* tmp = pila->top;
 	pila->top = pila->top->prev;
 	free(tmp);
+	pila->count--;
 	return data;
+}
+
+int length(Stack* pila)
+{
+	return pila->count;
 }
