@@ -12,6 +12,9 @@ struct queue_struct {
 	Qnode* head;
 	Qnode* tail;
 	int count;
+	int (*compare)(void*,void*);
+	void (*printData)(void*);
+	void (*freeData)(void*);
 };
 
 Qnode* newQnode(int data);

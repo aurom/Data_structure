@@ -10,6 +10,9 @@ struct avlnode{
 	AvlTree* right;
 	int height;
 	int color;
+	int (*compare)(void*,void*);
+	void (*printData)(void*);
+	void (*freeData)(void*);
 };
 /*crea un arbol*/
 AvlTree* newAvl(void*);

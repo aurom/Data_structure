@@ -11,6 +11,9 @@ struct stack_node{
 struct stack_struct {
 	Snode* top;
 	int count;
+	int (*compare)(void*,void*);
+	void (*printData)(void*);
+	void (*freeData)(void*);
 };
 
 Snode* newNode_Stack(int);

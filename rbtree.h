@@ -13,6 +13,9 @@ struct RBTree
 	RBTree* right;
 	int height;
 	int coloration;
+	int (*compare)(void*,void*);
+	void (*printData)(void*);
+	void (*freeData)(void*);
 };
 
 RBTree* newRB(int data);
