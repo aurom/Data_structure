@@ -25,16 +25,12 @@ List* newList(int e_size, printData fprint, compare comp){
 void list_destroy(List* lista)
 {
 	Lnode* current;
-	while(lista)
+	while(lista->tail)
 	{
-		current = lista->head;
-		lista->head = current->next;
-
-		free(current->element);
+		current = lista->tail;
+		lista->tail = lista->tail->prev;
 		free(current);
 	}
-	free(current->element);
-	free(current);
 }
 /*busca un dato en la lista*/
 Lnode* search(List* lista, void* data)
@@ -54,15 +50,19 @@ Lnode* search(List* lista, void* data)
 /*inserta un dato en la lista*/
 void insert(List* lista, void* data){
 	Lnode* node = newNode();
-
 	node->element = malloc(lista->e_size);
 	node->element = data;
-	if(lista->length == 0)
-		lista->head = lista->tail = node;
+	
+	if(lista->length == 0){
+		node->next = lista->head;
+		node->prev = lista->tail;
+		lista->head = node;
+		lista->tail = node;
+	}
 	else
 	{
-		lista->tail->next = node;
 		node->prev = lista->tail;
+		lista->tail->next = node;
 		lista->tail = node;
 	}
 	lista->length++;
@@ -94,7 +94,7 @@ void* minim(List* lista){
 	return min;
 }
 /*regresa el maximo dato de la lista*/
-void* max(List* lista){
+void* list_max(List* lista){
 	void* max;
 	Lnode* node = lista->head;
 	max = node->element;
@@ -136,7 +136,7 @@ List* copia(List* lista){
 	}
 }
 /*regrea el tamaño de la lista*/
-int length(List* lista){
+int list_length(List* lista){
 	return lista->length;
 }
 /*concatena dos listas*/

@@ -1,31 +1,36 @@
 
+#ifndef RBTREE_H
+#define RBTREE_H
 #define RED 1
 #define BLACK 0
 
-//typedef struct rb_node rb_node;
-typedef struct RBTree RBTree;
-struct RBTree
-{
-	int element;
-	int color;
-	RBTree* father;
-	RBTree* left;
-	RBTree* right;
-	int height;
-	int coloration;
-	int (*compare)(void*,void*);
-	void (*printData)(void*);
-	void (*freeData)(void*);
-};
+	typedef void (*printData)(void*);
+	typedef int (*compare)(void*,void*);
+	typedef struct RBTree RBTree;
+	struct RBTree
+	{
+		void* element;
+		int color;
+		RBTree* father;
+		RBTree* left;
+		RBTree* right;
+		int height;
+		int coloration;
+		printData print;
+		compare comp;
+	};
+	void make_empty(RBTree*);
+	RBTree* newRB(int,printData,compare);
+	RBTree* find_min(RBTree*);
+	RBTree* find_max(RBTree*);
+	RBTree* rb_find(RBTree*, void*);
+	RBTree* succesor(RBTree*, void*);
+	RBTree* predeccesor(RBTree*, void*);
+	int rb_height(RBTree*);
+	void rb_insert(RBTree*, void*,int,printData,compare);
+	void rb_delete(RBTree*, void*);
+	void* get_element(RBTree*);
+	RBTree* get_parent(RBTree*, RBTree*);
+	void print_rb(RBTree*);
 
-RBTree* newRB(int data);
-RBTree* findmin(RBTree*);
-RBTree* findmax(RBTree*);
-RBTree* find(RBTree*, int);
-RBTree* succesor(RBTree*, int);
-RBTree* predeccesor(RBTree*, int);
-int height(RBTree*);
-RBTree* rb_insert(RBTree*, int);
-RBTree* rb_delete(RBTree*, int);
-int getElement(RBTree*);
-RBTree* getParent(RBTree*, RBTree*);
+#endif // RBTREE_H

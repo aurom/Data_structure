@@ -3,13 +3,13 @@
 
 	typedef int (*compare)(void*,void*);
 	typedef	void (*printData)(void*);
-	//typedef	void (*freeData)(void*);
 	typedef struct nodo_lista Lnode;
 	typedef struct lista_struct List;
+	
 	struct nodo_lista {
 		void* element;
-		Lnode* next;
 		Lnode* prev;
+		Lnode* next;
 	};
 
 	struct lista_struct{
@@ -34,7 +34,7 @@
 	/*regresa el dato minimo de la lista*/
 	void* minim(List*);
 	/*regresa el maximo dato de la lista*/
-	void* max(List*);
+	void* list_max(List*);
 	/*dado un dato regresa el siguiente mayor;
 	* si no existe regresa ese mismo dato*/
 	void* successor(List*,void*);
@@ -46,7 +46,7 @@
 	/*Hace una copia de la lista y la regresa*/
 	List* copia(List*);
 	/*regrea el tamaño de la lista*/
-	int length(List*);
+	int list_length(List*);
 	/*concatena dos listas*/
 	List* concat(List*, List*);
 	/*ordena la lista*/

@@ -1,26 +1,29 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
-
 #include "rbtree.h"
 
 /*Crea un nuevo arbol
 * data -- elemento que tendra el nuevo arbol
 */
-RBTree* newRB(int data){
+
+RBTree* newRB(int elementsize, printData print, compare comp)
+{
 	RBTree* tree = (RBTree*) malloc(sizeof(RBTree));
 	assert(tree != NULL);
-	tree->element = data;
+	tree->element = malloc(elementsize);
 	tree->color = RED;
 	tree->father = NULL;
 	tree->left = NULL;
 	tree->right = NULL;
 	tree->height = 0;
 	tree->coloration = 0;
+	tree->print = print;
+	tree->comp = comp;
 }
 
 /*Elimina el arbol*/
-void makeEmpty(RBTree* tree)
+void make_empty(RBTree* tree)
 {
 	if(tree)
 	{
@@ -34,7 +37,7 @@ void makeEmpty(RBTree* tree)
 /*Encuenta el subarbol minimo.
 * tree - arbol donde se encontrara su minimo.
 */
-RBTree* findmin(RBTree* tree)
+RBTree* find_min(RBTree* tree)
 {
 	if(!tree)
 		return NULL;
@@ -46,7 +49,7 @@ RBTree* findmin(RBTree* tree)
 /*Encuentra el subarbol maximo.
 * tree -- arbol del que se encontrara su maximo
 */
-RBTree* findmax(RBTree* tree)
+RBTree* find_max(RBTree* tree)
 {
 	if(!tree)
 		return NULL;
@@ -60,18 +63,18 @@ RBTree* findmax(RBTree* tree)
 * data -- elemento que se buscara en el arbo
 * si no se encuentra o el arbol es vacio regresa NULL
 */
-RBTree* find(RBTree* tree, int data)
+RBTree* rb_find(RBTree* tree, void* data)
 {
-	if(!tree)
-		return NULL;
 	while(tree && tree->element != data)
 	{
-		if(data < tree->element)
+		if(tree->comp(data,tree->element) < 0)
 			tree = tree->left;
-		else
+		else if (tree->comp(data,tree->element) >0 )
 			tree = tree->right;
+		else
+			return tree;
 	}
-	return tree;
+	return NULL;
 }
 
 /*Encuentra el siguiente mayor arbol del arbol con el dato pasado
@@ -80,19 +83,20 @@ RBTree* find(RBTree* tree, int data)
 * si ningun arbol tiene ese elemento regresa NULL
 * si ese arbol es el mayor regresa ese arbol
 */
-RBTree* succesor(RBTree* tree, int data)
+RBTree* succesor(RBTree* tree, void* data)
 {
-	RBTree* node = find(tree,data);
+	RBTree* node = rb_find(tree,data);
 	if(!node)
 		return NULL;
 	if(node->right)
-		return findmin(node->right);
+		return find_min(node->right);
 	RBTree* ancestor = node->father;
 	while(ancestor && node == ancestor->right)
 	{
 		node = ancestor;
 		ancestor = ancestor->father;
 	}
+	return node;
 }
 
 /*Encuentra el arbol con elemento menor al elemento pasado
@@ -101,13 +105,13 @@ RBTree* succesor(RBTree* tree, int data)
 * si no hay un arbol con ese elemento regresa NULL
 * si no hay un elemento menor regresa ese arbol
 */
-RBTree* predeccesor(RBTree* tree, int data)
+RBTree* predeccesor(RBTree* tree, void* data)
 {
-	RBTree* node = find(tree,data);
+	RBTree* node = rb_find(tree,data);
 	if(!node)
 		return NULL;
 	if(node->left)
-		return findmax(node->left);
+		return find_max(node->left);
 	RBTree* ancestor = node->father;
 	while(ancestor && node == ancestor->left)
 	{
@@ -116,14 +120,20 @@ RBTree* predeccesor(RBTree* tree, int data)
 	}
 }
 
-/*Altura del arbo*/
-int height(RBTree* tree)
+int rb_max(int a, int b)
 {
-	return 0;
+	return a>b?a:b;
+}
+/*Altura del arbo*/
+int rb_height(RBTree* tree)
+{
+	if(!tree)
+		return -1;
+	return rb_max(height(tree->left),height(tree->right)) + 1;
 }
 
 /*Rotacion con hijo izquierdo*/
-RBTree* srotationleft(RBTree* tree)
+RBTree* rb_rotationleft(RBTree* tree)
 {
 	RBTree* rotate = tree->left;
 	tree->left = rotate->right;
@@ -132,7 +142,7 @@ RBTree* srotationleft(RBTree* tree)
 }
 
 /*Rotacion con hijo derecho*/
-RBTree* srotationright(RBTree* tree)
+RBTree* rbo_rotationright(RBTree* tree)
 {
 	RBTree* rotate = tree->right;
 	tree->right = rotate->left;
@@ -155,7 +165,7 @@ void rb_balance(RBTree* newtree)
 				newtree = grandfa;
 			}
 			else if (newtree == newtree->father->right) //caso 2
-				newtree = srotationright(newtree->father); // para ponerlo en el caso 3
+				newtree = rbo_rotationright(newtree->father); // para ponerlo en el caso 3
 			
 			newtree->father->color = BLACK; //caso 3
 			newtree->father->father->color = RED;
@@ -170,17 +180,20 @@ void rb_balance(RBTree* newtree)
 				newtree = grandfa;
 			}
 			else if (newtree == newtree->father->left)
-				newtree = srotationleft(newtree->father);
+				newtree = rb_rotationleft
+		(newtree->father);
 			newtree->father->color = BLACK;
 			newtree->father->father->color = RED;
 		}
 	}
+	newtree->height = height(newtree);
 }
 
 /*Inserta un nuevo elemento al arbol*/
-RBTree* rb_insert(RBTree* tree, int data)
+void rb_insert(RBTree* tree, void* data, int elementsize, printData print, compare comp)
 {
-	RBTree* newtree = newRB(data);
+	RBTree* newtree = newRB(elementsize,print,comp);
+	newtree->element = data;
 	if(!tree){
 		tree = newtree;
 		tree->color = BLACK;
@@ -189,22 +202,22 @@ RBTree* rb_insert(RBTree* tree, int data)
 	{
 		while(tree)
 		{
-			if(data < tree->element)
+			if(tree->comp(data,tree->element) < 0)
 				tree = tree->left;
-			else if(data > tree->element)
+			else if(tree->comp(data,tree->element) > 0)
 				tree = tree->right;
 			else
-				return tree; //ya esta el elemento
+				return; //ya esta el elemento
 		}
 		newtree->father = tree;
-		if(data < tree->element)
+		if(tree->comp(data,tree->element) < 0)
 			tree->left = newtree;
 		else
 			tree->right = newtree;
 	}
 	rb_balance(newtree);
 	tree->color = BLACK;
-	return tree;
+	tree->height = height(tree);
 }
 
 void rb_change(RBTree* tree, RBTree* tree2)
@@ -236,7 +249,7 @@ void rb_delete_fix(RBTree* tree, RBTree* to_fix)
 			{
 				bro->color = BLACK;
 				to_fix->father->color = RED;
-				to_fix->father = srotationright(to_fix->father); //ahora el padre sera el hermano
+				to_fix->father = rbo_rotationright(to_fix->father); //ahora el padre sera el hermano
 				bro = to_fix->father->right; //el padre anterior es el nuevo hermano
 			}
 			if(bro->left->color == BLACK && bro->right->color == BLACK) //los sobrinos
@@ -248,13 +261,14 @@ void rb_delete_fix(RBTree* tree, RBTree* to_fix)
 			{
 				bro->left->color = BLACK;
 				bro->color = RED;
-				bro = srotationleft(bro); //el hermano es el sobrino izquierdo
+				bro = rb_rotationleft
+			(bro); //el hermano es el sobrino izquierdo
 				bro = to_fix->father->right; //el sobrino izquierdo es el nuevo hermano
 			}
 			bro->color = to_fix->father->color; //le asignamos el color del padre
 			to_fix->father->color = BLACK; // el padre lo ponemos en negro
 			bro->right->color = BLACK; //sobrino izquierdo igual
-			to_fix->father = srotationright(to_fix->father); // el padre ahora es el que estabamos arreglando
+			to_fix->father = rbo_rotationright(to_fix->father); // el padre ahora es el que estabamos arreglando
 			to_fix = tree; //terminamos de arreglar
 		}
 		else //lo mismo pero con right
@@ -264,7 +278,8 @@ void rb_delete_fix(RBTree* tree, RBTree* to_fix)
 			{
 				bro->color = BLACK;
 				to_fix->father->color = RED;
-				to_fix->father = srotationleft(to_fix->father);
+				to_fix->father = rb_rotationleft
+			(to_fix->father);
 				bro = to_fix->father->left;
 			}
 			if(bro->right->color == BLACK && bro->left->color == BLACK)
@@ -276,27 +291,28 @@ void rb_delete_fix(RBTree* tree, RBTree* to_fix)
 			{
 				bro->right->color = BLACK;
 				bro->color = RED;
-				bro = srotationright(bro);
+				bro = rbo_rotationright(bro);
 				bro = to_fix->father->left;
 			}
 			bro->color = to_fix->father->color;
 			to_fix->father->color = BLACK;
 			bro->left->color = BLACK;
-			to_fix->father = srotationleft(to_fix->father);
+			to_fix->father = rb_rotationleft
+		(to_fix->father);
 			to_fix = tree;
 		}
 	}
 	to_fix->color = BLACK;
 }
 /*Borra un elemento del arbol */
-RBTree* rb_delete(RBTree* tree, int data)
+void rb_delete(RBTree* tree, void* data)
 {
 	if(!tree) // el arbol esta vacio
-		return NULL;
+		puts("Empty tree.");
 
-	RBTree* to_remove = find(tree,data);
+	RBTree* to_remove = rb_find(tree,data);
 	if(!to_remove) //no se encontro el elemento.
-		return NULL;
+		puts("No find element.");
 
 	if(!to_remove->left && !to_remove->right)//es hoja
 	{
@@ -305,7 +321,6 @@ RBTree* rb_delete(RBTree* tree, int data)
 		else
 			to_remove->father->left = NULL;
 		free(to_remove);
-		return tree;
 	}
 
 	int original_color = to_remove->color;
@@ -323,7 +338,7 @@ RBTree* rb_delete(RBTree* tree, int data)
 	}
 	else //tiene dos hijos
 	{
-		RBTree* aux2 = findmin(to_remove->right); //agarramos el minimo de su subarbol derecho para el intercambio
+		RBTree* aux2 = find_min(to_remove->right); //agarramos el minimo de su subarbol derecho para el intercambio
 		original_color = aux2->color; //salvamos el color de aux2
 		aux = aux2->right; //salvamos el derecho de aux2
 		if(aux2->father == to_remove)
@@ -338,16 +353,15 @@ RBTree* rb_delete(RBTree* tree, int data)
 	}
 	if(original_color == BLACK) //si el color original es negro
 		rb_delete_fix(tree, aux); //arreglamos las violaciones causadas
-	return tree;
 }
 
 
-int getElement(RBTree* tree)
+void* get_element(RBTree* tree)
 {
 	return tree->element;
 }
 
-RBTree* getParent(RBTree* tree1, RBTree* tree2)
+RBTree* get_parent(RBTree* tree1, RBTree* tree2)
 {
 	while(tree1){
 		tree1->coloration = 1;
@@ -358,4 +372,33 @@ RBTree* getParent(RBTree* tree1, RBTree* tree2)
 	    	return tree2;
 	    tree2 = tree2->father;
 	}
+}
+
+void print_tree(RBTree* tree, int level)
+{
+	int i;
+	if(!tree){
+		printf("None\n");
+		return;
+	}
+	else
+	{
+		print_tree(tree->left,level+1);
+		for(i = 0; i < level;i++)
+		{
+			putchar('\t');
+		}
+		tree->print(tree->element);
+		if(tree->color == RED)
+			printf(" ,R\n");
+		else
+			printf(" ,B\n");
+
+		print_tree(tree->right,level+1);
+	}
+}
+
+void print_rb(RBTree* tree)
+{
+	print_tree(tree,0);
 }

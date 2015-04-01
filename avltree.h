@@ -1,40 +1,41 @@
+#ifndef AVLTREE_H
+#define AVLTREE_H
 
+	typedef int (*compare)(void*,void*);
+	typedef void (*printData)(void*);
+	typedef struct avlnode AvlTree;
+	struct avlnode{
+		void* element;
+		AvlTree* parent;
+		AvlTree* left;
+		AvlTree* right;
+		printData print;
+		compare comp;
+		int e_size;
+		int color;
+		int height;
+	};
+	/*crea un arbol*/
+	AvlTree* newAvl(int,printData,compare);
+	/*borra el arbol*/
+	void makeEmpty(AvlTree*);
 
-//typedef void* any_t;
-typedef int (*compare)(void* dato,void* element);
-typedef struct avlnode AvlTree;
-struct avlnode{
-	void* element;
-	AvlTree* parent;
-	AvlTree* left;
-	AvlTree* right;
-	int height;
-	int color;
-	int (*compare)(void*,void*);
-	void (*printData)(void*);
-	void (*freeData)(void*);
-};
-/*crea un arbol*/
-AvlTree* newAvl(void*);
-/*borra el arbol*/
-void makeEmpty();
+	AvlTree* find(AvlTree*,void*);
 
-AvlTree* find(AvlTree*,void*);
+	AvlTree* findmin(AvlTree*);
 
-AvlTree* findmin(AvlTree*);
+	AvlTree* findmax(AvlTree*);
 
-AvlTree* findmax(AvlTree*);
+	int height(AvlTree*);
 
-int height(AvlTree*);
+	void avl_insert(AvlTree*, void*, printData, compare);
 
-AvlTree* insert(AvlTree*, void*, compare comparador);
+	void avl_delete(AvlTree*,void*);
 
-AvlTree* delTree(AvlTree*,void*, compare comparador);
+	void* getElement(AvlTree*);
 
-void* getElement(AvlTree*);
+	void pintAVL(AvlTree*);
 
-void pintTree(AvlTree*);
+	AvlTree* getParent(AvlTree*, AvlTree*);
 
-AvlTree* getPariente(AvlTree*, AvlTree*);
-
-/*funcion para realizar comparacions*/
+#endif // AVLTREE_H
