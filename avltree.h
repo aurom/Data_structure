@@ -3,24 +3,24 @@
 
 	typedef int (*compare)(void*,void*);
 	typedef void (*printData)(void*);
-	typedef struct avlnode AvlTree;
-	struct avlnode{
+	typedef struct AvlTree AvlTree;
+
+	struct AvlTree
+	{
 		void* element;
-		AvlTree* parent;
+		AvlTree* father;
 		AvlTree* left;
 		AvlTree* right;
-		printData print;
-		compare comp;
-		int e_size;
-		int color;
 		int height;
+		int color;
 	};
 	/*crea un arbol*/
-	AvlTree* newAvl(int,printData,compare);
+	AvlTree* newAvl(void*,int);
+	
 	/*borra el arbol*/
 	void makeEmpty(AvlTree*);
 
-	AvlTree* find(AvlTree*,void*);
+	AvlTree* find(AvlTree*,void*, compare);
 
 	AvlTree* findmin(AvlTree*);
 
@@ -28,13 +28,13 @@
 
 	int height(AvlTree*);
 
-	void avl_insert(AvlTree*, void*, printData, compare);
+	AvlTree* avl_insert(AvlTree*, void*, int, compare);
 
-	void avl_delete(AvlTree*,void*);
+	AvlTree* avl_delete(AvlTree*,void*, compare);
 
 	void* getElement(AvlTree*);
 
-	void pintAVL(AvlTree*);
+	void pintAVL(AvlTree*, printData);
 
 	AvlTree* getParent(AvlTree*, AvlTree*);
 

@@ -4,7 +4,7 @@
 #include "stack.h"
 Snode* newNode_Stack()
 {
-	Snode* top = (Snode*) malloc(sizeof(Stack));
+	Snode* top = (Snode*) malloc(sizeof(Snode));
 	top->element = NULL;
 	top->prev = NULL;
 }
@@ -56,7 +56,7 @@ int s_length(Stack* pila)
 
 void printStack(Stack* pila)
 {
-	if(!pila)
+	if(is_sempty(pila))
 		printf("None\n");
 	else
 	{

@@ -1,23 +1,24 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <string.h>
 #include "avltree.h"
 
-AvlTree* newAvl(int elementsize, printData print, compare comp){
-	AvlTree* tree = (AvlTree*) malloc(sizeof(AvlTree));
-	assert(tree != NULL);
-	tree->left = NULL;
-	tree->right = NULL;
-	tree->parent = NULL;
-	tree->element = malloc(elementsize);
-	tree->print = print;
-	tree->comp = comp;
-	tree->e_size = elementsize;
-	tree->color = 0;
-	tree->height = 0;
+AvlTree* newAvl(void* data,int elementsize)
+{
+	AvlTree* newtree = (AvlTree*) malloc(sizeof(AvlTree));
+	assert(newtree != NULL);
+	newtree->element = malloc(elementsize);
+	newtree->element = data;
+	newtree->father = NULL;
+	newtree->left = NULL;
+	newtree->right = NULL;
+	newtree->color = 0;
+	newtree->height = 0;
+	return newtree;
 }
-
-void makeEmpty(AvlTree* tree){
+void makeEmpty(AvlTree* tree)
+{
 	if(tree)
 	{
 		makeEmpty(tree->left);
@@ -27,174 +28,179 @@ void makeEmpty(AvlTree* tree){
 	return;
 }
 
-AvlTree* find(AvlTree* tree,void* data){
-	if(tree == NULL)
+AvlTree* find(AvlTree* tree ,void* data,compare comp)
+{
+	if(!tree)
+	{
+		puts("Empty tree");
 		return NULL;
-	if(tree->comp(data,tree->element) < 0)
-		return find(tree->left,data);
-	if(tree->comp(data,tree->element) > 0)
-		return find(tree->right,data);
+	}
+	if(comp(data,tree->element) < 0)
+		find(tree->left,data,comp);
+	else if (comp(data,tree->element) > 0)
+		find(tree->right,data,comp);
 	else
 		return tree;
 }
 
-AvlTree* findmin(AvlTree* tree){
-	if(tree->left == NULL)
+AvlTree* findmin(AvlTree* tree)
+{
+	if(!tree->left)
 		return tree;
-	return findmin(tree->left);
+	else return findmin(tree->left);
 }
-
 AvlTree* findmax(AvlTree* tree)
 {
-	if(tree->right == NULL)
+	if(!tree->right)
 		return tree;
-	return findmax(tree->right);
+	else return findmax(tree->right);
 }
 
 int height(AvlTree* tree)
 {
-	if(tree == NULL)
+	if(!tree)
 		return -1;
 	else
 		return tree->height;
 }
-
 int max(int a, int b)
 {
-	return a > b ? a : b;
+	return a > b ? a: b;
 }
 
-/*Rotacion con el hijo izquierdo */
 AvlTree* srotationleft(AvlTree* tree)
 {
-	AvlTree* tree_balanceado = tree->left; //guardas el arbol izquierdo
-	tree->left = tree_balanceado->right; //asignas el arbol derecho de tu arbol izquierdo como tu nuevo arbol izquierdo
-	tree_balanceado->right = tree;// el arbol derecho de tu arbol izquierdo ahora es el arbol pasado
-	tree->height = max(height(tree->left),height(tree->right)) + 1;
-	tree_balanceado->height = max(height(tree_balanceado->left), tree->height) + 1;
-	return tree_balanceado; //regresas el arbol balanceado
+	AvlTree* balance = tree->left;
+	tree->left = balance->right;
+	balance->right = tree;
+	tree->height = max(height(tree->left),height(tree->right)) +1;
+	balance->height = max(height(balance->left),tree->height) + 1;
+	tree = balance;
+	return tree;
 }
-/*Rotacion con el hijo derecho */
+
 AvlTree* srotationright(AvlTree* tree)
 {
-	AvlTree* tree_balanceado = tree->right; //guardas el arbol derecho
-	tree->right = tree_balanceado->left; //el arbol derecho ahora es el arbol izquierdo del arbol derecho
-	tree_balanceado->left = tree;//tu arbol ahora es el arbol izquierdo
+	AvlTree* balance = tree->right;
+	tree->right = balance->left;
+	balance->left = tree;
 	tree->height = max(height(tree->left),height(tree->right)) + 1;
-	tree_balanceado->height = max(height(tree_balanceado->right), tree->height) + 1;
-	return tree_balanceado; //regresas el arbol balanceado
+	balance->height = max(tree->height,height(balance->right)) +1;
+	tree = balance;
+	return tree;
 }
 
-/*Doble rotacion con el hijo izquierdo*/
 AvlTree* drotationleft(AvlTree* tree)
 {
-	tree->left = srotationright(tree->left); //equilibras tu arbol izquierdo
-	return srotationleft(tree);//equilibras el arbol
+	tree->left = srotationright(tree->left);
+	return srotationleft(tree);
 }
 
-/*Doble rotacion con el hijo derecho */
 AvlTree* drotationright(AvlTree* tree)
 {
-	tree->right = srotationleft(tree->right); //Equilibras tu arbol derecho
-	return srotationright(tree); //equilibras el arbol
+	tree->right = srotationleft(tree->right);
+	return srotationright(tree);
 }
 
 AvlTree* balance(AvlTree* tree)
 {
-	if(tree == NULL)
-		return NULL;
-	if(height(tree->left) - height(tree->right) > 1){//si esta desbalanceado por la izquierda
+	if(height(tree->left) - height(tree->right) > 1)
+	{
 		if(height(tree->left->left) >= height(tree->left->right))
 			tree = srotationleft(tree);
 		else
 			tree = drotationleft(tree);
 	}
-	else if(height(tree->right)-height(tree->left) > 1){ //si esta desbalanceado por la derecha
-			if(height(tree->right->right) >= height(tree->right->left))
-				tree = srotationright(tree);
-			else
-				tree = drotationright(tree);
+	else if (height(tree->right) - height(tree->left) > 1)
+	{
+		if(height(tree->right->right) >= height(tree->right->left))
+			tree = srotationright(tree);
+		else
+			tree = drotationright(tree);
 	}
 	else
 		;
-	tree->height = max(height(tree->left), height(tree->right)) + 1;
+	tree->height = max(height(tree->left),height(tree->right)) + 1;
 	return tree;
 }
 
-void avl_insert(AvlTree* tree, void* data, printData print, compare comp)
+AvlTree* avl_insert(AvlTree* tree, void* data, int elementsize, compare comp)
 {
-	if(!tree->parent)//first avl_insertion.
-	{
-		tree = newAvl(sizeof(data),print,comp);
-		return;
-	}		
 	if(!tree)
-		tree = newAvl(sizeof(data),print,comp);
-	if(tree->comp(data,tree->element) < 0 ){
-		avl_insert(tree->left,data,print,comp);
-		tree->left->parent = tree;
-	}
-	else if(tree->comp(data,tree->element) > 0){
-		avl_insert(tree->right,data,print, comp);
-		tree->right->parent = tree;
+	{
+		tree =  newAvl(data,elementsize);
 	}
 	else
-		return;
-	balance(tree);
-
+	{
+		if(comp(data,tree->element) < 0){
+			tree->left = avl_insert(tree->left,data,elementsize,comp);
+			tree->left->father = tree;
+		}
+		else if (comp(data,tree->element) > 0){
+			tree->right = avl_insert(tree->right,data,elementsize,comp); 
+			tree->right->father = tree;
+		}
+		else
+			;
+	}
+	tree = balance(tree);
+	return tree;
 }
 
-void avl_delete(AvlTree* tree ,void* data)
+AvlTree* avl_delete(AvlTree* tree,void* data, compare comp)
 {
-	if(!tree){
-		puts("Empty tree.");
-		return;
-	}
-	if(tree->comp(data, tree->element))
-		avl_delete(tree->left, data);
-	else if(tree->comp(data,tree->element))
-		avl_delete(tree->right, data);
-	else if(tree->left && tree->right)
+	if(!tree)
 	{
-		tree->element = findmin(tree->right)->element;
-		avl_delete(tree->right, tree->element);
+		puts("Empty tree.");
+		return NULL;
 	}
+	
+	if(comp(data,tree->element) < 0)
+		tree->left = avl_delete(tree->left,data,comp);
+	else if (comp(data,tree->element) > 0)
+		tree->right = avl_delete(tree->right,data,comp);
 	else
 	{
-		AvlTree* tmp = tree;
-		tree = (tree->left != NULL) ? tree->left: tree->right;
-		free(tmp);
+		if(tree->left && tree->right)
+		{
+			AvlTree* temp = findmin(tree->right);
+			tree->element = temp->element;
+			tree->right = avl_delete(tree->right,temp->element,comp);
+			free (temp);
+		}
+		else
+			tree = tree->left? tree->left: tree->right;
 	}
-	balance(tree);
+	return tree;
 }
-void* getElement(AvlTree* tree )
+
+void* getElement(AvlTree* tree)
 {
 	return tree->element;
 }
-
-void printTree(AvlTree* tree, int level)
+void printTree(AvlTree* tree, int level,printData print)
 {
 	int i;
 	if(!tree){
-		printf("None\n");
+		printf("\n");
 		return;
 	}
 	else
 	{
-		printTree(tree->left,level+1);
+		printTree(tree->right,level+1,print);
 		for(i = 0; i < level;i++)
 		{
 			putchar('\t');
 		}
-		tree->print(tree->element);
-		printf("\n");
-		printTree(tree->right,level+1);
+		print(tree->element);
+		printTree(tree->left,level+1,print);
 	}
 }
 
-void printAVL(AvlTree* tree)
+void printAVL(AvlTree* tree, printData print)
 {
-	printTree(tree,0);
+	printTree(tree,0,print);
+
 }
 
 AvlTree* getParent(AvlTree* tree1, AvlTree* tree2)
@@ -202,7 +208,7 @@ AvlTree* getParent(AvlTree* tree1, AvlTree* tree2)
 	while(tree1)
 	{
 		tree1->color = 1;
-		tree1 = tree1->parent;
+		tree1 = tree1->father;
 	}
 	while(tree2)
 	{
@@ -210,6 +216,6 @@ AvlTree* getParent(AvlTree* tree1, AvlTree* tree2)
 		{
 			return tree2;
 		}
-		tree2 = tree2->parent;
+		tree2 = tree2->father;
 	}
 }

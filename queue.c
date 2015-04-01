@@ -19,7 +19,7 @@ Queue* newQueue(int elementsize, printData print)
 }
 int is_qempty(Queue* cola)
 {
-	if(!cola)
+	if(!cola->head)
 		return TRUE;
 	else
 		return FALSE;
@@ -28,9 +28,13 @@ void enqueue(Queue* cola, void* data){
 	Qnode* tmp = newQnode();
 	tmp->element = malloc(cola->e_size);
 	tmp->element = data;
-	tmp->prev = cola->tail;
-	cola->tail->next = tmp;
-	cola->tail = tmp;
+	if(cola->count == 0)
+		cola->head=cola->tail=tmp;
+	else{
+		tmp->prev = cola->tail;
+		cola->tail->next = tmp;
+		cola->tail = tmp;
+	}
 	cola->count++;
 }
 void* dequeue(Queue* cola){
@@ -39,10 +43,9 @@ void* dequeue(Queue* cola){
 		puts("Empty queue");
 		return NULL;
 	}
-	void* data = cola->head->element;
 	Qnode* tmp = cola->head;
-	cola->head = cola->head->next;
-	cola->head->prev = NULL;
+	void* data = tmp->element;
+	cola->head = tmp->next;
 	cola->count--;
 	free(tmp);
 	return data;
@@ -55,7 +58,7 @@ int q_length(Queue* cola)
 
 void printQueue(Queue* cola)
 {
-	if(!cola)
+	if(is_qempty(cola))
 	{
 		printf("None\n");
 		return;

@@ -171,16 +171,19 @@ void testQueue()
 	}
 	printf("Queue with integers.\n");
 	printQueue(qint);
+	printf("This queue has %d elements.\n",q_length(qint));
 	printf("\nQueue with chars. \n");
 	printQueue(qchar);
+	printf("This queue has %d elements.\n",q_length(qchar));
 	printf("\nQueue with strings. \n");
+	printf("This queue has %d elements.\n",q_length(qstr));
 	printQueue(qstr);
-	printf("\nDeleting queues....");
+	printf("\nDeleting queues....\n");
 	for(i = 0; i < size; i++)
 	{
-		dequeue(qint);
-		dequeue(qchar);
-		dequeue(qstr);
+		printf("%d\n",*((int*)dequeue(qint)));
+		printf("%c\n",*((char*)dequeue(qchar)));
+		printf("%s\n",((char*)dequeue(qstr)));
 	}
 	printf("ok!\n");
 }
@@ -191,28 +194,28 @@ void testAVL()
 	int int_array[] = {-1,3,4,-6,-9};
 	char char_array[] = {'p','e','r','r','o'};
 	char* string_array[5] = {"hola","halo","niño","vaca","peso"};
-	AvlTree* avlint = newAvl(sizeof(int),print_int,compare_int);
-	AvlTree* avlchar = newAvl(sizeof(char),print_char,compare_char);
-	AvlTree* avlstr = newAvl(sizeof(char*),print_string,compare_string);
+	AvlTree* avlint = NULL; //newAvl(sizeof(int),print_int,compare_int);
+	AvlTree* avlchar = NULL; //newAvl(sizeof(char),print_char,compare_char);
+	AvlTree* avlstr = NULL; //newAvl(sizeof(char*),print_string,compare_string);
 	int i;
 	for(i = 0; i < size; i++)
 	{
-		avl_insert(avlint,&int_array[i],avlint->print,avlint->comp);
-		avl_insert(avlchar,&char_array[i],print_char,compare_char);
-		avl_insert(avlstr,*(string_array+i),print_string,compare_string);
+		avlint = avl_insert(avlint,&int_array[i],sizeof(int),compare_int);
+		avlchar = avl_insert(avlchar,&char_array[i],sizeof(char),compare_char);
+		avlstr = avl_insert(avlstr,*(string_array+i),sizeof(char*),compare_string);
 	}
 	printf("AvlTree with integers.\n");
-	printAVL(avlint);
+	printAVL(avlint,print_int);
 	printf("\nThe max element: %d\n",*((int*)getElement(findmax(avlint))));
 	printf("The minimun element: %d\n",*((int*)getElement(findmin(avlint))));
 	printf("Height of tree: %d\n",height(avlint));
 	printf("AvlTree with chars.\n");
-	printAVL(avlchar);
+	printAVL(avlchar,print_char);
 	printf("\nThe max element: %c\n",*((char*)getElement(findmax(avlchar))));
 	printf("The minimun element: %c\n",*((char*)getElement(findmin(avlchar))));
 	printf("Height of tree: %d\n",height(avlchar));
 	printf("AvlTree with strings.\n");
-	printAVL(avlstr);
+	printAVL(avlstr,print_string);
 	printf("\nThe max element: %s\n",((char*)getElement(findmax(avlstr))));
 	printf("The minimun element: %s\n",((char*)getElement(findmin(avlstr))));
 	printf("Height of tree: %d\n",height(avlstr));
