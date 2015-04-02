@@ -238,30 +238,30 @@ void testRB()
 	int i;
 	for(i = 0; i < size; i++)
 	{
-		rb_insert(rbint,&int_array[i],sizeof(int),rbint->print,rbint->comp);
-		rb_insert(rbchar,&char_array[i],sizeof(char),rbchar->print,rbchar->comp);
-		rb_insert(rbstr,string_array[i],sizeof(char*),rbstr->print,rbstr->comp);
+		rb_insert(rbint,&int_array[i]);
+		rb_insert(rbchar,&char_array[i]);
+		rb_insert(rbstr,string_array[i]);
 	}
 
 	printf("RBTree with integers.\n");
 	print_rb(rbint);
-	printf("\nThe max element: %d\n",*((int*)get_element(find_max(rbint))));
-	printf("The minimun element: %d\n",*((int*)get_element(find_min(rbint))));
+	printf("\nThe max element: %d\n",*((int*)e_max(rbint)));
+	printf("The minimun element: %d\n",*((int*)e_min(rbint)));
 	printf("Height of tree: %d\n",rb_height(rbint));
 	printf("RBTree with chars.\n");
 	print_rb(rbchar);
-	printf("\nThe max element: %c\n",*((char*)get_element(find_max(rbchar))));
-	printf("The minimun element: %c\n",*((char*)get_element(find_min(rbchar))));
+	printf("\nThe max element: %c\n",*((char*)e_max(rbchar)));
+	printf("The minimun element: %c\n",*((char*)e_min(rbchar)));
 	printf("Height of tree: %d\n",rb_height(rbchar));
 	printf("RBTree with strings.\n");
 	print_rb(rbstr);
-	printf("\nThe max element: %s\n",((char*)get_element(find_max(rbstr))));
-	printf("The minimun element: %s\n",((char*)get_element(find_min(rbstr))));
+	printf("\nThe max element: %s\n",((char*)e_max(rbstr)));
+	printf("The minimun element: %s\n",((char*)e_min(rbstr)));
 	printf("Height of tree: %d\n",rb_height(rbstr));
-	printf("Deleting AvlTrees...\n");
-	make_empty(rbint);
-	make_empty(rbchar);
-	make_empty(rbstr);
+	printf("Deleting RBTrees...\n");
+	destroy(rbint);
+	destroy(rbchar);
+	destroy(rbstr);
 	printf("ok!\n");	
 }
 void tester(int select)
