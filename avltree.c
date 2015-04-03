@@ -72,7 +72,11 @@ AvlTree* srotationleft(AvlTree* tree)
 {
 	AvlTree* balance = tree->left;
 	tree->left = balance->right;
+	if(balance->right)
+		balance->right->father = tree;
 	balance->right = tree;
+	balance->father = tree->father;
+	tree->father = balance;
 	tree->height = max(height(tree->left),height(tree->right)) +1;
 	balance->height = max(height(balance->left),tree->height) + 1;
 	tree = balance;
@@ -83,7 +87,11 @@ AvlTree* srotationright(AvlTree* tree)
 {
 	AvlTree* balance = tree->right;
 	tree->right = balance->left;
+	if(balance->left)
+		balance->left->father = tree;
 	balance->left = tree;
+	balance->father = tree->father;
+	tree->father = balance;
 	tree->height = max(height(tree->left),height(tree->right)) + 1;
 	balance->height = max(tree->height,height(balance->right)) +1;
 	tree = balance;
@@ -203,8 +211,15 @@ void printAVL(AvlTree* tree, printData print)
 
 }
 
-AvlTree* getParent(AvlTree* tree1, AvlTree* tree2)
+AvlTree* getParent(AvlTree* tree, void* data1,void* data2, compare comp)
 {
+	AvlTree* tree1 = find(tree,data1,comp);
+	AvlTree* tree2 = find(tree,data2,comp);
+	if(!tree1 || !tree2)
+	{
+		puts("Those data are not in the tree.");
+		return NULL;
+	}
 	while(tree1)
 	{
 		tree1->color = 1;

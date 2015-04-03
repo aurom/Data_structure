@@ -191,13 +191,15 @@ void testQueue()
 void testAVL()
 {
 	int size = 5;
-	int int_array[] = {-1,3,4,-6,-9};
+	int int_array[] = {9,12,14,17,19,23,50,67,72,76,100,145,150,170};
 	char char_array[] = {'p','e','r','r','o'};
 	char* string_array[5] = {"hola","halo","niño","vaca","peso"};
 	AvlTree* avlint = NULL; //newAvl(sizeof(int),print_int,compare_int);
 	AvlTree* avlchar = NULL; //newAvl(sizeof(char),print_char,compare_char);
 	AvlTree* avlstr = NULL; //newAvl(sizeof(char*),print_string,compare_string);
 	int i;
+	for(i =0;  i< 14; i++)
+		avlint = avl_insert(avlint,&int_array[i],sizeof(int),compare_int);
 	for(i = 0; i < size; i++)
 	{
 		avlint = avl_insert(avlint,&int_array[i],sizeof(int),compare_int);
@@ -209,7 +211,9 @@ void testAVL()
 	printf("\nThe max element: %d\n",*((int*)getElement(findmax(avlint))));
 	printf("The minimun element: %d\n",*((int*)getElement(findmin(avlint))));
 	printf("Height of tree: %d\n",height(avlint));
-	printf("AvlTree with chars.\n");
+	int parent = *((int*)getElement(getParent(avlint,&int_array[1],&int_array[5],compare_int)));
+	printf("The closest parent of 12 and 23 is : %d\n",parent);
+	printf("\nAvlTree with chars.\n");
 	printAVL(avlchar,print_char);
 	printf("\nThe max element: %c\n",*((char*)getElement(findmax(avlchar))));
 	printf("The minimun element: %c\n",*((char*)getElement(findmin(avlchar))));

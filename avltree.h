@@ -36,6 +36,6 @@
 
 	void pintAVL(AvlTree*, printData);
 
-	AvlTree* getParent(AvlTree*, AvlTree*);
+	AvlTree* getParent(AvlTree*, void*, void*,compare);
 
 #endif // AVLTREE_H
