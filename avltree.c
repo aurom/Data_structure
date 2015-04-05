@@ -112,6 +112,8 @@ AvlTree* drotationright(AvlTree* tree)
 
 AvlTree* balance(AvlTree* tree)
 {
+	if(!tree)
+		return NULL;
 	if(height(tree->left) - height(tree->right) > 1)
 	{
 		if(height(tree->left->left) >= height(tree->left->right))
@@ -179,6 +181,7 @@ AvlTree* avl_delete(AvlTree* tree,void* data, compare comp)
 		else
 			tree = tree->left? tree->left: tree->right;
 	}
+	tree = balance(tree);
 	return tree;
 }
 

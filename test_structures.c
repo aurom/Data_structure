@@ -9,17 +9,6 @@
 #include "rbtree.h"
 
 
-
-
-typedef enum
-{
-		list,
-		stack,
-		queue,
-		avltree,
-		rbtree
-}Data;
-
 int compare_int(void* a, void* b)
 {
 	int num1 = *(int*)a;
@@ -212,7 +201,11 @@ void testAVL()
 	printf("The minimun element: %d\n",*((int*)getElement(findmin(avlint))));
 	printf("Height of tree: %d\n",height(avlint));
 	int parent = *((int*)getElement(getParent(avlint,&int_array[1],&int_array[5],compare_int)));
-	printf("The closest parent of 12 and 23 is : %d\n",parent);
+	printf("The closest relative of 12 and 23 is : %d\n",parent);
+	avlint = avl_delete(avlint, &int_array[3],compare_int);
+	printf("Deleting 17:\n");
+	printAVL(avlint,print_int);
+
 	printf("\nAvlTree with chars.\n");
 	printAVL(avlchar,print_char);
 	printf("\nThe max element: %c\n",*((char*)getElement(findmax(avlchar))));
